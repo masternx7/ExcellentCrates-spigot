@@ -53,7 +53,7 @@
     - [**nightcore**](https://nightexpressdev.com/nightcore/) - Plugin engine.
 - Optional Plugins:
     - [**PacketEvents**](https://spigotmc.org/resources/80279/) or [**ProtocolLib**](https://ci.dmulloy2.net/job/ProtocolLib/) - Crate holograms.
-- Folia Supported: <span style="color:red">**No**</span>
+- Folia Supported: <span style="color:red">**ํYes**</span>
 - Forge Supported: <span style="color:red">**No**</span>
 
 ## Links

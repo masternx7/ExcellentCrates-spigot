@@ -15,6 +15,7 @@ import su.nightexpress.excellentcrates.opening.inventory.spinner.provider.Animat
 import su.nightexpress.excellentcrates.opening.inventory.spinner.provider.RewardProvider;
 import su.nightexpress.excellentcrates.opening.selectable.SelectableProvider;
 import su.nightexpress.excellentcrates.opening.world.provider.SimpleRollProvider;
+import su.nightexpress.excellentcrates.util.FoliaUtil;
 import su.nightexpress.nightcore.util.bukkit.NightItem;
 import su.nightexpress.nightcore.util.random.Rnd;
 import su.nightexpress.nightcore.util.random.WeightedItem;
@@ -31,21 +32,36 @@ public class OpeningUtils {
 
     @Nullable
     public static Firework createFirework(@NotNull Location location) {
+        return createFirework(null, location);
+    }
+
+    @Nullable
+    public static Firework createFirework(@Nullable CratesPlugin plugin, @NotNull Location location) {
         World world = location.getWorld();
         if (world == null) return null;
 
-        Firework firework = world.spawn(location, Firework.class);
-        FireworkMeta meta = firework.getFireworkMeta();
-        FireworkEffect.Type type = Rnd.get(FireworkEffect.Type.values());
-        Color color = Color.fromBGR(Rnd.get(256), Rnd.get(256), Rnd.get(256));
-        Color fade = Color.fromBGR(Rnd.get(256), Rnd.get(256), Rnd.get(256));
-        FireworkEffect effect = FireworkEffect.builder()
-            .flicker(Rnd.nextBoolean()).withColor(color).withFade(fade).with(type).trail(Rnd.nextBoolean()).build();
+        Firework[] result = new Firework[1];
+        Runnable spawnTask = () -> {
+            Firework firework = world.spawn(location, Firework.class);
+            FireworkMeta meta = firework.getFireworkMeta();
+            FireworkEffect.Type type = Rnd.get(FireworkEffect.Type.values());
+            Color color = Color.fromBGR(Rnd.get(256), Rnd.get(256), Rnd.get(256));
+            Color fade = Color.fromBGR(Rnd.get(256), Rnd.get(256), Rnd.get(256));
+            FireworkEffect effect = FireworkEffect.builder()
+                .flicker(Rnd.nextBoolean()).withColor(color).withFade(fade).with(type).trail(Rnd.nextBoolean()).build();
 
-        meta.addEffect(effect);
-        meta.setPower(Rnd.get(4));
-        firework.setFireworkMeta(meta);
-        return firework;
+            meta.addEffect(effect);
+            meta.setPower(Rnd.get(4));
+            firework.setFireworkMeta(meta);
+            result[0] = firework;
+        };
+
+        if (plugin != null) {
+            FoliaUtil.runAtLocation(plugin, location, spawnTask);
+        } else {
+            spawnTask.run();
+        }
+        return result[0];
     }
 
     @NotNull

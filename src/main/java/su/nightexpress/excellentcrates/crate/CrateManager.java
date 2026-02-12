@@ -44,6 +44,7 @@ import su.nightexpress.excellentcrates.hologram.HologramTemplate;
 import su.nightexpress.excellentcrates.registry.CratesRegistries;
 import su.nightexpress.excellentcrates.user.CrateUser;
 import su.nightexpress.excellentcrates.util.CrateUtils;
+import su.nightexpress.excellentcrates.util.FoliaUtil;
 import su.nightexpress.excellentcrates.util.InteractType;
 import su.nightexpress.excellentcrates.util.ItemHelper;
 import su.nightexpress.excellentcrates.util.pos.WorldPos;
@@ -627,7 +628,9 @@ public class CrateManager extends AbstractManager<CratesPlugin> {
 
     private void pushback(@NotNull Player player, @NotNull CrateSource source) {
         if (source.hasBlock() && source.getCrate().isPushbackEnabled()) {
-            player.setVelocity(player.getEyeLocation().getDirection().setY(Config.CRATE_PUSHBACK_Y.get()).multiply(Config.CRATE_PUSHBACK_MULTIPLY.get()));
+            FoliaUtil.runAtEntity(this.plugin, player, () -> {
+                player.setVelocity(player.getEyeLocation().getDirection().setY(Config.CRATE_PUSHBACK_Y.get()).multiply(Config.CRATE_PUSHBACK_MULTIPLY.get()));
+            });
         }
     }
 

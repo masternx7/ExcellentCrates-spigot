@@ -15,6 +15,7 @@ import su.nightexpress.excellentcrates.crate.cost.Cost;
 import su.nightexpress.excellentcrates.crate.impl.CrateSource;
 import su.nightexpress.excellentcrates.opening.OpeningUtils;
 import su.nightexpress.excellentcrates.opening.world.WorldOpening;
+import su.nightexpress.excellentcrates.util.FoliaUtil;
 import su.nightexpress.excellentcrates.util.pos.WorldPos;
 import su.nightexpress.nightcore.util.EntityUtil;
 import su.nightexpress.nightcore.util.LocationUtil;
@@ -130,7 +131,8 @@ public class SimpleRollOpening extends WorldOpening {
         this.addReward(this.reward);
 
         if (this.rewardDisplay != null) {
-            this.rewardDisplay.remove();
+            Item display = this.rewardDisplay;
+            FoliaUtil.runAtEntity(this.plugin, display, display::remove);
             this.rewardDisplay = null;
         }
 
@@ -160,20 +162,24 @@ public class SimpleRollOpening extends WorldOpening {
         Reward reward = this.isSpinsCompleted() ? this.reward : this.crate.rollReward(this.player);
 
         if (this.rewardDisplay == null) {
-            this.rewardDisplay = player.getWorld().spawn(this.displayLocation, Item.class, item -> item.setVelocity(new Vector()));
-            this.rewardDisplay.setPersistent(false);
-            this.rewardDisplay.setCustomNameVisible(true);
-            this.rewardDisplay.setGravity(false);
-            this.rewardDisplay.setPickupDelay(Integer.MAX_VALUE);
-            this.rewardDisplay.setUnlimitedLifetime(true);
-            this.rewardDisplay.setInvulnerable(true);
-            //this.rewardDisplay.setBillboard(Display.Billboard.CENTER);
-            //this.rewardDisplay.setTransformation(new Transformation(new Vector3f(), new AxisAngle4f(), new Vector3f(0.35f, 0.35f, 0.35f), new AxisAngle4f()));
+            FoliaUtil.runAtLocation(this.plugin, this.displayLocation, () -> {
+                this.rewardDisplay = player.getWorld().spawn(this.displayLocation, Item.class, item -> item.setVelocity(new Vector()));
+                this.rewardDisplay.setPersistent(false);
+                this.rewardDisplay.setCustomNameVisible(true);
+                this.rewardDisplay.setGravity(false);
+                this.rewardDisplay.setPickupDelay(Integer.MAX_VALUE);
+                this.rewardDisplay.setUnlimitedLifetime(true);
+                this.rewardDisplay.setInvulnerable(true);
+                //this.rewardDisplay.setBillboard(Display.Billboard.CENTER);
+                //this.rewardDisplay.setTransformation(new Transformation(new Vector3f(), new AxisAngle4f(), new Vector3f(0.35f, 0.35f, 0.35f), new AxisAngle4f()));
+            });
         }
         if (this.rewardDisplay != null) {
             ItemStack itemStack = reward.getPreviewItem();
-            this.rewardDisplay.setItemStack(itemStack);
-            EntityUtil.setCustomName(this.rewardDisplay, reward.getName());
+            FoliaUtil.runAtEntity(this.plugin, this.rewardDisplay, () -> {
+                this.rewardDisplay.setItemStack(itemStack);
+                EntityUtil.setCustomName(this.rewardDisplay, reward.getName());
+            });
         }
 
         VanillaSound.of(Sound.UI_BUTTON_CLICK, 0.5f).play(this.displayLocation);
@@ -181,7 +187,7 @@ public class SimpleRollOpening extends WorldOpening {
 
         if (this.isSpinsCompleted()) {
             VanillaSound.of(Sound.ENTITY_GENERIC_EXPLODE, 0.7f).play(this.displayLocation);
-            OpeningUtils.createFirework(this.displayLocation);
+            OpeningUtils.createFirework(this.plugin, this.displayLocation);
         }
     }
 }

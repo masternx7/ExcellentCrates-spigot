@@ -20,6 +20,8 @@ import su.nightexpress.excellentcrates.opening.OpeningManager;
 import su.nightexpress.excellentcrates.opening.ProviderRegistry;
 import su.nightexpress.excellentcrates.registry.CratesRegistries;
 import su.nightexpress.excellentcrates.user.UserManager;
+import su.nightexpress.excellentcrates.util.FoliaScheduler;
+import su.nightexpress.excellentcrates.util.SchedulerFactory;
 import su.nightexpress.nightcore.NightPlugin;
 import su.nightexpress.nightcore.commands.command.NightCommand;
 import su.nightexpress.nightcore.config.PluginDetails;
@@ -47,6 +49,8 @@ public class CratesPlugin extends NightPlugin {
     private EditorManager   editorManager;
 
     private CrateLogger crateLogger;
+    
+    private FoliaScheduler foliaScheduler;
 
     @Override
     @NotNull
@@ -65,6 +69,8 @@ public class CratesPlugin extends NightPlugin {
     protected void onStartup() {
         CratesAPI.load(this);
         Keys.load(this);
+        this.foliaScheduler = SchedulerFactory.getScheduler();
+        this.info("Running on " + SchedulerFactory.getServerVersion());
     }
 
     @Override
@@ -212,5 +218,10 @@ public class CratesPlugin extends NightPlugin {
     @NotNull
     public CrateManager getCrateManager() {
         return this.crateManager;
+    }
+    
+    @NotNull
+    public FoliaScheduler getFoliaScheduler() {
+        return this.foliaScheduler;
     }
 }
